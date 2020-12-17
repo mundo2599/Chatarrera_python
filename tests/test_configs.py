@@ -1,3 +1,4 @@
+from backend import Exceptions
 import unittest
 from backend import Configs
 
@@ -33,17 +34,15 @@ class TestConfigs(unittest.TestCase):
         self.assertEqual(len(self.configs.materiales), self.len)#Mismo tamano
 
     def test_add_material_already_exists(self):
-        exception_expected = "Material already exists"
         with self.assertRaises(ValueError) as exception_context:
             self.configs.add_material('Chatarra', 6, 5)
-        self.assertEqual(str(exception_context.exception), exception_expected)
+        self.assertEqual(str(exception_context.exception), str(Exceptions.MATERIAL_EXISTS))
         self.assertEqual(len(self.configs.materiales), self.len)#Mismo tamano
 
     def test_add_material_no_parent(self):
-        exception_expected = "Parent doesn't exist"
         with self.assertRaises(ValueError) as exception_context:
             self.configs.add_material('Bote', parent='Amuminio')
-        self.assertEqual(str(exception_context.exception), exception_expected)
+        self.assertEqual(str(exception_context.exception), str(Exceptions.PARENT_NO_EXISTS))
 
     def test_save_and_load(self):
         self.configs.save('test.json')
@@ -52,3 +51,50 @@ class TestConfigs(unittest.TestCase):
         self.assertEqual(self.configs.last_save, configs_loaded.last_save)
         self.assertEqual(self.configs.materiales.values.tolist(), configs_loaded.materiales.values.tolist())
         self.assertEqual(self.configs.current_line, configs_loaded.current_line)
+
+    def test_get_material(self):
+        # Por nombre
+        material = self.configs.material(name='Aluminio')
+        self.assertEqual(material['name'], 'Aluminio')
+
+        # Por index
+        material = self.configs.material(index=1)
+        self.assertEqual(material['name'], 'Aluminio')
+        self.assertEqual(material['index'], 1)
+
+        # no parametros
+        with self.assertRaises(ValueError) as exception_context:
+            self.configs.material()
+        self.assertEqual(str(Exceptions.NO_PARAMETERS), str(exception_context.exception))
+
+        # Nombre no existe
+        with self.assertRaises(ValueError) as exception_context:
+            self.configs.material(name='some_material')
+        self.assertEqual(str(Exceptions.MATERIAL_NO_EXISTS), str(exception_context.exception))
+
+        # Index no encontrado
+        with self.assertRaises(ValueError) as exception_context:
+            self.configs.material(index=-1)
+        self.assertEqual(str(Exceptions.MATERIAL_NO_EXISTS), str(exception_context.exception))
+
+    def test_get_material_children(self):
+        # Por nombre
+        material, children = self.configs.material_children(name='Aluminio')
+        self.assertEqual(material['name'], 'Aluminio')
+        self.assertEqual(len(children), 2)
+
+        # Por index
+        material, children = self.configs.material_children(index=0)
+        self.assertEqual(material['index'], 0)
+        self.assertEqual(material['name'], 'Chatarra')
+        self.assertEqual(len(children), 0)
+
+        # Nombre no existe
+        with self.assertRaises(ValueError) as exception_context:
+            self.configs.material(name='some_material')
+        self.assertEqual(str(Exceptions.MATERIAL_NO_EXISTS), str(exception_context.exception))
+
+        # Index no encontrado
+        with self.assertRaises(ValueError) as exception_context:
+            self.configs.material(index=-1)
+        self.assertEqual(str(Exceptions.MATERIAL_NO_EXISTS), str(exception_context.exception))

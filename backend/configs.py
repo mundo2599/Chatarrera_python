@@ -1,8 +1,9 @@
+from backend import Exceptions
+
+from typing import Tuple
 from datetime import datetime
 import pandas as pd
 import json
-
-from pandas.core.frame import DataFrame
 
 class Configs:
     COLUMNS_MATERIALES = ['name', 'sale_price', 'buy_price', 'parent']
@@ -19,22 +20,44 @@ class Configs:
 
         self._df_materiales = pd.DataFrame(columns=self.COLUMNS_MATERIALES)
 
+    # PROPERTIES
     @property
-    def materiales(self) -> DataFrame:
+    def materiales(self) -> pd.DataFrame:
         return self._df_materiales
 
     @property
-    def materiales_no_children(self) -> DataFrame:
+    def materiales_no_children(self) -> pd.DataFrame:
         return self._df_materiales[self._df_materiales['parent'].isnull()]
 
-    def material_children(self, name: str = None, id: str = None) -> DataFrame:
+    def material(self, name: str = None, index: str = None) -> map:
         """Use only one parameter"""
-        if name:
-            return self._df_materiales[self._df_materiales['parent'] == name]
-        elif id:
-            return self._df_materiales[self._df_materiales['parent'] == name]
+        material = pd.DataFrame()
+        if name != None:
+            material = self._df_materiales[self._df_materiales['name'] == name]
+        elif index != None:
+            try:
+                material = self._df_materiales.loc[[index]] # Doble corchete para que regrese un df
+            except:
+                pass
         else:
-            raise ValueError('No parameters provided')
+            raise Exceptions.NO_PARAMETERS
+
+        if len(material) == 0:
+            raise Exceptions.MATERIAL_NO_EXISTS
+        else:
+            map_material = material.to_dict('records')[0]
+            map_material['index'] = material.index
+            return map_material
+
+    def material_children(self, name: str = None, index: str = None) -> Tuple[map, pd.DataFrame]:
+        """Use only one parameter"""
+        try:
+            material = self.material(name=name, index=index)
+        except:
+            raise
+        
+        children = self.materiales[self._df_materiales['parent'] == material['name']]
+        return material, children
 
     @property
     def current_line(self) -> str:
@@ -47,18 +70,19 @@ class Configs:
         else:
             return json.dumps(self._data['last_save'])
 
+    # FUNCTIONS
     def add_material(self, name: str, sale_price: float = 0, buy_price: float = 0, parent: str = None):
         # Precios no negativos
         if sale_price < 0 or buy_price < 0:
-            raise ValueError("Value can not be less than zero")
+            raise Exceptions.VALUE_LESS_ZERO
 
         # Verificar que no se repita el nombre
         if name in self._df_materiales['name'].values:
-            raise ValueError("Material already exists")
+            raise Exceptions.MATERIAL_EXISTS
 
         # validar que hay padre
         if parent != None and parent not in self._df_materiales['name'].values:
-            raise ValueError("Parent doesn't exist")
+            raise Exceptions.PARENT_NO_EXISTS
 
         # Agregar material a df
         row = [name, sale_price, buy_price, parent]
