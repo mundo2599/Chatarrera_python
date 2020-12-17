@@ -1,29 +1,32 @@
 {
   "excel_path": "",
-  "last_save": "2020-12-15T12:40:34.813413",
-  "current_line": 1,
+  "last_save": "2020-12-16T18:08:52.477032",
   "materiales": [
-    {
-      "name": "Chatarra",
-      "sale_price": 6,
-      "buy_price": 5
-    },
-    {
-      "name": "Aluminio",
-      "sale_price": 22,
-      "buy_price": 19,
-      "children": [
-        {
-          "name": "Delgado",
-          "sale_price": 20,
-          "buy_price": 18
-        },
-        {
-          "name": "Grueso",
-          "sale_price": 24,
-          "buy_price": 22
-        }
-      ]
-    }
-  ]
+    [
+      "Chatarra",
+      6,
+      5,
+      null
+    ],
+    [
+      "Aluminio",
+      22,
+      19,
+      null
+    ],
+    [
+      "Delgado",
+      20,
+      18,
+      "Aluminio"
+    ],
+    [
+      "Grueso",
+      24,
+      22,
+      "Aluminio"
+    ]
+  ],
+  "last_date": null,
+  "current_line": 1
 }

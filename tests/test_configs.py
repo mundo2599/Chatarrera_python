@@ -1,5 +1,5 @@
 import unittest
-from backend import Configs, configs
+from backend import Configs
 
 class TestConfigs(unittest.TestCase):
     def setUp(self) -> None:
@@ -15,12 +15,12 @@ class TestConfigs(unittest.TestCase):
         return super().tearDown()
 
     def test_add_material(self):
-        self.assertEqual(len(self.configs.materiales), 2)
-        self.assertEqual(len(self.configs.materiales[1]['children']), 2)
-        pass
+        self.assertEqual(len(self.configs.materiales), 4)
+        self.assertEqual(len(self.configs.materiales_no_children), 2)
+        self.assertEqual(len(self.configs.material_children(name='Aluminio')), 2)
 
     def test_add_material_wrong_prices(self):
-        exception_expected = "Prices can not be less than zero"
+        exception_expected = "Value can not be less than zero"
 
         with self.assertRaises(ValueError) as exception_context:
             self.configs.add_material('Cobre', -1, 5)
@@ -50,5 +50,5 @@ class TestConfigs(unittest.TestCase):
         configs_loaded = Configs()
         configs_loaded.load('test.json')
         self.assertEqual(self.configs.last_save, configs_loaded.last_save)
-        self.assertEqual(self.configs.materiales, configs_loaded.materiales)
+        self.assertEqual(self.configs.materiales.values.tolist(), configs_loaded.materiales.values.tolist())
         self.assertEqual(self.configs.current_line, configs_loaded.current_line)
