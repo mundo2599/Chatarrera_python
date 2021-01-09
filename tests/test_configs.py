@@ -1,6 +1,6 @@
-from backend import Exceptions
 import unittest
-from backend import Configs
+
+from backend import Exceptions, Configs
 
 class TestConfigs(unittest.TestCase):
     def setUp(self) -> None:
@@ -21,16 +21,14 @@ class TestConfigs(unittest.TestCase):
         self.assertEqual(len(self.configs.material_children(name='Aluminio')), 2)
 
     def test_add_material_wrong_prices(self):
-        exception_expected = "Value can not be less than zero"
-
         with self.assertRaises(ValueError) as exception_context:
             self.configs.add_material('Cobre', -1, 5)
-        self.assertEqual(str(exception_context.exception), exception_expected)
+        self.assertEqual(str(exception_context.exception), str(Exceptions.VALUE_LESS_ZERO))
         self.assertEqual(len(self.configs.materiales), self.len)#Mismo tamano
 
         with self.assertRaises(ValueError) as exception_context:
             self.configs.add_material('Cobre', 1, -5)
-        self.assertEqual(str(exception_context.exception), exception_expected)
+        self.assertEqual(str(exception_context.exception), str(Exceptions.VALUE_LESS_ZERO))
         self.assertEqual(len(self.configs.materiales), self.len)#Mismo tamano
 
     def test_add_material_already_exists(self):

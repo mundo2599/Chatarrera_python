@@ -1,6 +1,6 @@
 from backend import Exceptions
 
-from typing import Tuple
+from typing import Dict, Tuple
 from datetime import datetime
 import pandas as pd
 import json
@@ -29,7 +29,7 @@ class Configs:
     def materiales_no_children(self) -> pd.DataFrame:
         return self._df_materiales[self._df_materiales['parent'].isnull()]
 
-    def material(self, name: str = None, index: str = None) -> map:
+    def material(self, name: str = None, index: str = None) -> Dict:
         """Use only one parameter"""
         material = pd.DataFrame()
         if name != None:
@@ -49,8 +49,11 @@ class Configs:
             map_material['index'] = material.index
             return map_material
 
-    def material_children(self, name: str = None, index: str = None) -> Tuple[map, pd.DataFrame]:
-        """Use only one parameter"""
+    def material_children(self, name: str = None, index: str = None) -> Tuple[Dict, pd.DataFrame]:
+        """
+        Use only one parameter.
+        Returns Tuple with parent as Map and children as DataFrame
+        """
         try:
             material = self.material(name=name, index=index)
         except:
