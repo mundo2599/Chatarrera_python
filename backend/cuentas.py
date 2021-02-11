@@ -1,11 +1,14 @@
-from pandas.core.frame import DataFrame
+import pandas as pd
+from datetime import datetime
+
 from backend import Configs
 from backend import Exceptions
-from datetime import datetime
-import pandas as pd
 
 # TODO: Cada accion replicada a base de datos o guardar todo al finalizar
 class Cuentas:
+    '''Clase para guardar compras y ventas hechas en un cierto periodo 
+    de tiempo'''
+
     COLUMNS_COMPRAS = ['material', 'kg', 'pagado']
     COLUMNAS_VENTAS = ['material', 'kg', 'recibido']
 
@@ -16,15 +19,15 @@ class Cuentas:
         self._df_ventas = pd.DataFrame(columns=self.COLUMNAS_VENTAS)
 
     @property
-    def compras(self) -> DataFrame:
+    def compras(self) -> pd.DataFrame:
         return self._df_compras
     
     @property
-    def ventas(self) -> DataFrame:
+    def ventas(self) -> pd.DataFrame:
         return self._df_ventas
 
     @property
-    def compras_totales(self) -> DataFrame:
+    def compras_totales(self) -> pd.DataFrame:
         compras_totales = pd.DataFrame(columns=self.COLUMNS_COMPRAS)
         # Por cada material parent
         for material in self._configs.materiales_no_children['name'].to_list():
@@ -40,7 +43,7 @@ class Cuentas:
         return compras_totales
 
     @property
-    def ventas_totales(self) -> DataFrame:
+    def ventas_totales(self) -> pd.DataFrame:
         '''Suma de ventas por material'''
         ventas_totales = pd.DataFrame(columns=self.COLUMNAS_VENTAS)
         # Por cada material parent

@@ -1,0 +1,5 @@
+from frontend.designer.main_window import Ui_MainWindow
+from frontend.designer.widget_compras import Ui_widgetCompras
+from frontend.designer.widget_configs import Ui_widgetConfigs
+from frontend.designer.widget_materiales import Ui_widgetMateriales
+from frontend.designer.widget_ventas import Ui_widgetVentas

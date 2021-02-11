@@ -6,6 +6,9 @@ import pandas as pd
 import json
 
 class Configs:
+    '''Clase que se encarga de contener datos necesarios para aplicacion, asi mismo
+    es capaz de guardar y cargar estos de un json'''
+    
     COLUMNS_MATERIALES = ['name', 'sale_price', 'buy_price', 'parent']
 
     def __init__(self):
